@@ -14,6 +14,7 @@ import com.remote.ui.main.view.MainView;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements IApiCallback, MainView {
+    private static final String TAG = "MainActivity";
     private MainPresenter presenter;
     private ProgressDialog dialog;
 
@@ -32,26 +33,27 @@ public class MainActivity extends AppCompatActivity implements IApiCallback, Mai
 
     @Override
     public void success(List<Beauty> beauties) {
-
+        Log.e(TAG, "callback:---success");
     }
 
     @Override
     public void failure(Throwable e) {
-
+        Log.e(TAG, "callback:---failure" + e.toString());
     }
 
     @Override
     public void cancel() {
-
+        Log.e(TAG, "callback:---cancel");
     }
 
     @Override
     public void networkError() {
-
+        Log.e(TAG, "view:---networkError");
     }
 
     @Override
     public void showProgress() {
+        Log.e(TAG, "view:---showProgress");
         if (dialog != null) {
             dialog.show();
         }
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements IApiCallback, Mai
 
     @Override
     public void dismissProgress() {
+        Log.e(TAG, "callback:---dismissProgress");
         if (dialog != null) {
             dialog.dismiss();
         }
@@ -68,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements IApiCallback, Mai
 
     @Override
     public void showNetWorkError() {
-
+        Log.e(TAG, "view:---showNetWorkError");
     }
 
     @Override

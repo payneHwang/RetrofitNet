@@ -1,8 +1,9 @@
 package com.remote.domain.repository;
 
 import com.remote.domain.model.Beauty;
+import com.remote.net.client.RetrofitFactory;
 import com.remote.net.response.Response;
-import com.remote.net.service.ApiService;
+import com.remote.net.service.Service;
 
 import java.util.List;
 
@@ -18,13 +19,12 @@ import io.reactivex.functions.Function;
 public class Remote {
     //请求Beauty数据实体
     public static Observable<List<Beauty>> getBeautyList() {
-        return ApiService.getRemoteService().beautyList(100, 1).map(new Function<Response, List<Beauty>>() {
+        return RetrofitFactory.create().createReq(Service.class).beautyList(100, 1).map(new Function<Response, List<Beauty>>() {
             @Override
             public List<Beauty> apply(@NonNull Response response) throws Exception {
                 return response.getResults();
             }
         });
-
     }
 
 }

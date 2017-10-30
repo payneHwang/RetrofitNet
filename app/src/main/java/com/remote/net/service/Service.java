@@ -1,7 +1,6 @@
 package com.remote.net.service;
 
 import com.remote.net.response.Response;
-import com.remote.net.url.UrlConstance;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
@@ -14,7 +13,7 @@ import retrofit2.http.Path;
 
 public interface Service {
 
-    @GET(UrlConstance.BEATUTY_DATA)
+    @GET("api/data/福利/{count}/{page}")
     Observable<Response> beautyList(@Path("count") int count, @Path("page") int page);
 
 

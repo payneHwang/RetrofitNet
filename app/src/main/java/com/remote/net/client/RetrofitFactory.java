@@ -1,10 +1,12 @@
 package com.remote.net.client;
 
-import com.remote.net.Intercepter.Intercepter;
+import com.remote.BuildConfig;
+import com.remote.net.intercepter.Intercepter;
 
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -41,14 +43,20 @@ public class RetrofitFactory {
 
     private void init() {
         //初始化OkHttpClient客户端
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        if (BuildConfig.DEBUG) {
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        } else
+            interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(NET_CONNECT_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(NET_READ_TIMEOUT, TimeUnit.SECONDS)
                 .writeTimeout(NET_WRITE_TIMEOUT, TimeUnit.SECONDS)
                 .addInterceptor(Intercepter.defaultInterceptor())
-                .addInterceptor(Intercepter.defaultLogger())
+                .addInterceptor(interceptor)//设置网络请求和相应的日志拦截器
                 .retryOnConnectionFailure(true)
                 .build();
+
         //配置Retrofit客户端
         retrofit = new Retrofit.Builder()
                 .baseUrl(HOST)
