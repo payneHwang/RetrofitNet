@@ -15,19 +15,39 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class RetrofitFactory {
-    private static Retrofit retrofit;
     private static final String HOST = "http://gank.io/";
+    private static final int NET_READ_TIMEOUT = 5000;
+    private static final int NET_WRITE_TIMEOUT = 5000;
+    private static final int NET_CONNECT_TIMEOUT = 5000;
+    private static RetrofitFactory factory;
+    private Retrofit retrofit;
 
     private RetrofitFactory() {
+        init();
     }
 
-    private static Retrofit init() {
+    //提供静态实例获取RetrofitFactory对象
+    public static RetrofitFactory create() {
+        if (factory == null) {
+            synchronized (RetrofitFactory.class) {
+                if (factory == null) {
+                    factory = new RetrofitFactory();
+                    return factory;
+                }
+            }
+        }
+        return factory;
+    }
+
+    private void init() {
         //初始化OkHttpClient客户端
-        OkHttpClient okHttpClient = new OkHttpClient.Builder().connectTimeout(5000, TimeUnit.SECONDS)
-                .readTimeout(5000, TimeUnit.SECONDS)
-                .writeTimeout(5000, TimeUnit.SECONDS)
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(NET_CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(NET_READ_TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(NET_WRITE_TIMEOUT, TimeUnit.SECONDS)
                 .addInterceptor(Intercepter.defaultInterceptor())
                 .addInterceptor(Intercepter.defaultLogger())
+                .retryOnConnectionFailure(true)
                 .build();
         //配置Retrofit客户端
         retrofit = new Retrofit.Builder()
@@ -36,19 +56,11 @@ public class RetrofitFactory {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        return retrofit;
     }
 
-    public static Retrofit create() {
-        if (retrofit == null) {
-            synchronized (RetrofitFactory.class) {
-                if (retrofit == null) {
-                    retrofit = init();
-                    return retrofit;
-                }
-            }
-        }
-        return retrofit;
+    //获取服务对象
+    public <T> T createReq(Class<T> service) {
+        return retrofit.create(service);
     }
 
 }
